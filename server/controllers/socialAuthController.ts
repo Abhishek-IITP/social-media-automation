@@ -105,7 +105,7 @@ export const syncAccounts = async(req:AuthRequest ,res:Response): Promise<void> 
                     {zernioAccountId:zid,},
                     {
                     user:req.user._id,
-                    platform: normalizaedPlatform,
+                    platform: normalizaedPlatform as "twitter" | "linkedin" | "facebook" | "instagram" | "facebook_page" | "linkedin_page" | "instagram_business",
                     handle: zAccount.username || zAccount.name|| zAccount.handle|| "Unkown",
                     zernioAccountId : zid,
                     status: "connected",
