@@ -15,7 +15,7 @@ const pageTitles: Record<string, string> = {
 export function Layout() {
      const { isAuthenticated, isLoading } = useAuth();
      const location = useLocation();
-     const title = pageTitles[location.pathname] || "Scheduler";
+     const title = pageTitles[location.pathname] || "NexaPost";
      const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
      if (isLoading) {
