@@ -4,9 +4,8 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "tsx server.ts",
-    "server": "nodemon --exec tsx server.ts",
+    "start": "node dist/server.js",
+    "dev": "nodemon --watch . --ext ts --exec tsx server.ts",
     "build": "tsc"
   },
   "keywords": [],
