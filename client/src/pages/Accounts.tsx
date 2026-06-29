@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
 import { PLATFORMS } from "../assets/assets";
-import { PlusIcon, Share2Icon } from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import { AccountList } from "../components/AccountList";
 import { PlatformPicker } from "../components/PlatformPicker";
 import toast from "react-hot-toast";

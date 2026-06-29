@@ -1,4 +1,3 @@
-import { ArrowRightIcon, CheckCircleIcon } from "lucide-react";
 import { motion } from "framer-motion";
 
 const steps = [

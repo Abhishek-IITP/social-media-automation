@@ -5,14 +5,7 @@ import fs from "fs";
 import path from "path";
 import Account from "./models/Account.js";
 
-setTimeout(async () => {
-    try {
-        const accounts = await Account.find({});
-        fs.writeFileSync("git_output.txt", `=== ACCOUNTS IN DB ===\n${JSON.stringify(accounts, null, 2)}`);
-    } catch (err: any) {
-        fs.writeFileSync("git_output.txt", `Error fetching debug accounts: ${err.message}`);
-    }
-}, 5000);
+
 
 import DBConnect from "./config/db.js";
 import authRouter from "./routes/authRoutes.js";

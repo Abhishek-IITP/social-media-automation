@@ -1,5 +1,5 @@
 import { PLATFORMS } from "../assets/assets";
-import { ArrowRightIcon, CalendarDaysIcon, CheckCircleIcon, XIcon, UploadCloudIcon, ClockIcon, ImageIcon } from "lucide-react";
+import { ArrowRightIcon, CheckCircleIcon, XIcon, UploadCloudIcon, ClockIcon, ImageIcon } from "lucide-react";
 import { api } from "../api/axios";
 import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
