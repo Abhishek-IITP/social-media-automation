@@ -33,7 +33,7 @@ export const initScheduler =()=>{
 
                          const payload = {
                               content:  post.content,
-                              publishNode: true,
+                              publishNow: true,
                               ...(post.mediaUrl? {mediaItems: [{type:post.mediaType || "image", url: post.mediaUrl}]}:{}),
                               platforms: zernioPlatforms
                          }

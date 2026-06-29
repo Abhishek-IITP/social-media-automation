@@ -239,7 +239,10 @@ export function Scheduler() {
                                                   {/* Platform icons */}
                                                   <div className="flex items-center gap-2 mb-1.5">
                                                        <div className="flex gap-1">
-                                                            {(post.platforms || []).map((pl: string) => {
+                                                            {post.platform ? (() => {
+                                                                 const meta = PLATFORMS.find((p) => post.platform.startsWith(p.id));
+                                                                 return meta ? <meta.icon className="size-3.5 text-text-muted" /> : null;
+                                                            })() : (post.platforms || []).map((pl: string) => {
                                                                  const meta = PLATFORMS.find((p) => pl.startsWith(p.id));
                                                                  return meta ? <meta.icon key={pl} className="size-3.5 text-text-muted" /> : null;
                                                             })}

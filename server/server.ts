@@ -1,8 +1,6 @@
 import "dotenv/config";
 import express, { NextFunction, Request, Response } from 'express';
 import cors from "cors";
-import fs from "fs";
-import path from "path";
 import Account from "./models/Account.js";
 
 

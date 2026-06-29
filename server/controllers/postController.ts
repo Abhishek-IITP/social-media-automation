@@ -5,6 +5,7 @@ import { GoogleGenAI } from "@google/genai";
 import { cloudinary } from "../config/cloudinary.js";
 import Generation from "../models/Generation.js";
 import Post from "../models/Post.js";
+import axios from "axios";
 
 
 
@@ -48,25 +49,21 @@ export const generatedPost= async(req:AuthRequest, res:Response):Promise<void>=>
           let mediaUrl = "";
           if (generateImage) {
                try {
-                    const response = await ai.models.generateImages({
-                         model: 'imagen-3.0-generate-002',
-                         prompt: imagePrompt,
-                         config: {
-                              numberOfImages: 1,
-                              aspectRatio: '1:1'
-                         }
+                    const pollinationUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(imagePrompt)}?width=1024&height=1024&nologo=true&seed=${Math.floor(Math.random() * 1000000)}`;
+                    const response = await axios.get(pollinationUrl, { responseType: "arraybuffer" });
+                    const base64Image = Buffer.from(response.data, "binary").toString("base64");
+                    const dataUrl = `data:image/jpeg;base64,${base64Image}`;
+                    
+                    const uploadResult = await cloudinary.uploader.upload(dataUrl, {
+                         folder: "ai-generations",
                     });
-                    const image = response?.generatedImages?.[0]?.image;
-                    if (image && image.imageBytes) {
-                         mediaUrl = `data:${image.mimeType || 'image/jpeg'};base64,${image.imageBytes}`;
-                         
-                         const uploadResult = await cloudinary.uploader.upload(mediaUrl, {
-                              folder: "ai-generations",
-                         });
-                         mediaUrl = uploadResult.secure_url;
-                    }
+                    mediaUrl = uploadResult.secure_url;
                } catch (error: any) {
-                    console.error("Error generating/uploading image:", error);
+                    console.error("Error generating/uploading image via Pollinations AI:", error?.message || error);
+                    try {
+                         const fs = await import("fs");
+                         fs.appendFileSync("error.log", `${new Date().toISOString()} - ERROR: ${error?.stack || error?.message || JSON.stringify(error)}\n`);
+                    } catch (e) {}
                }
           }
 
@@ -103,6 +100,26 @@ export const getGenerations= async(req:AuthRequest, res:Response):Promise<void>=
           res.status(500).json({
                success: false,
                message: error.message || "Failed to fetch generated post"
+          });
+     }
+
+}
+
+export const deleteGeneration= async(req:AuthRequest, res:Response):Promise<void>=>{
+
+     try {
+          const { id } = req.params;
+          const generation = await Generation.findOneAndDelete({ _id: id, user: req.user?._id });
+          if (!generation) {
+               res.status(404).json({ success: false, message: "Draft not found" });
+               return;
+          }
+          res.json({ success: true, message: "Draft deleted successfully" });
+          
+     } catch (error:any) {
+          res.status(500).json({
+               success: false,
+               message: error.message || "Failed to delete draft"
           });
      }
 
