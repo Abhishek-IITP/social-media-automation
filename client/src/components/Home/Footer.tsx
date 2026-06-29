@@ -15,7 +15,7 @@ export default function Footer() {
                     <div className="lg:col-span-2 space-y-4">
                         <Link to="/" onClick={() => scrollTo(0, 0)} className="inline-flex items-center gap-2">
                             <img src="/logo.svg" alt="logo" className="size-5.5" />
-                            <span className="font-serif italic font-semibold text-lg text-text">Scheduler</span>
+                            <span className="font-serif italic font-semibold text-lg text-text">NexaPost</span>
                         </Link>
                         <p className="text-xs text-text-secondary leading-relaxed max-w-xs font-medium">
                             An elegant social media editor that makes publishing across multiple workspaces effortless.
@@ -41,7 +41,7 @@ export default function Footer() {
 
                 {/* Bottom bar */}
                 <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-border">
-                    <p className="text-[10px] font-semibold text-text-muted">© {new Date().getFullYear()} Scheduler. All rights reserved.</p>
+                    <p className="text-[10px] font-semibold text-text-muted">© {new Date().getFullYear()} NexaPost. All rights reserved.</p>
                     <div className="flex items-center gap-6">
                         <a href="#" className="text-[10px] font-semibold text-text-muted hover:text-text transition-colors duration-200">
                             Privacy Policy
