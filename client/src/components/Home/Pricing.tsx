@@ -1,4 +1,4 @@
-import { CheckIcon, CircleCheckBigIcon } from "lucide-react";
+import { CheckIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 

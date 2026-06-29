@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 
 export function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (val: boolean) => void }) {
      const { logout, user } = useAuth();
+     console.log("Context User:", user);
      const location = useLocation();
      
      const navItems = [
@@ -63,12 +64,12 @@ export function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (va
                <div className="p-4 border-t border-border bg-[#F5F2EA]/30">
                     <div className="flex items-center gap-3 p-3 bg-white border border-border rounded-2xl shadow-xs"> 
                          <div className="size-8.5 rounded-xl bg-primary-light text-primary flex items-center justify-center text-xs font-bold shrink-0 border border-primary-light">
-                              {user?.user?.name?.charAt(0).toUpperCase() || "U"}
+                              {user?.name?.charAt(0).toUpperCase() || "U"}
                          </div>
 
                          <div className="flex-1 min-w-0">
-                              <div className="text-xs font-bold text-text truncate leading-tight">{user?.user?.name}</div>
-                              <div className="text-[9px] text-text-muted truncate mt-0.5 font-medium leading-none">{user?.user?.email}</div>
+                              <div className="text-xs font-bold text-text truncate leading-tight">{user?.name}</div>
+                              <div className="text-[9px] text-text-muted truncate mt-0.5 font-medium leading-none">{user?.email}</div>
                          </div>
                     </div>
                     

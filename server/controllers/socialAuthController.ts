@@ -1,9 +1,7 @@
 import  {  Request, Response } from 'express';
 import { zernio } from '../config/Zernio.js';
 import User from '../models/User.js';
-import { Query } from 'mongoose';
 import Account from '../models/Account.js';
-import { platform } from 'node:os';
 import { AuthRequest } from '../middlewares/authmiddleware.js';
 
 
