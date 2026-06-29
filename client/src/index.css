@@ -1,11 +1,24 @@
-@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap");
 @import "tailwindcss";
 
 @theme {
-    --color-bg: #fafafa;
-    --color-text: #111111;
-    --font-sans: "Outfit", sans-serif;
-    --font-serif: "Urbanist", sans-serif;
+    --color-bg: #FBF9F6;
+    --color-surface: #FFFFFF;
+    --color-text: #191919;
+    --color-text-secondary: #605E5A;
+    --color-text-muted: #95938F;
+    --color-border: #ECE9E2;
+    --color-border-hover: #D6D2C9;
+    --color-primary: #D96B43;
+    --color-primary-hover: #C2562E;
+    --color-primary-subtle: #FDF6F2;
+    --color-primary-light: #F7E4DC;
+    --color-success: #3A8E67;
+    --color-success-subtle: #F2FBF6;
+    --color-warning: #B38600;
+    --color-warning-subtle: #FDF9EA;
+    --font-sans: "Geist", system-ui, sans-serif;
+    --font-serif: "Newsreader", "Playfair Display", serif;
 }
 
 * {
@@ -14,6 +27,7 @@
 
 html {
     scroll-behavior: smooth;
+    background-color: var(--color-bg);
 }
 
 body {
@@ -22,6 +36,14 @@ body {
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.015em;
+    line-height: 1.6;
+}
+
+h1, h2, h3, h4 {
+    font-family: var(--font-serif);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
 }
 
 button {
@@ -30,16 +52,46 @@ button {
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
+    width: 4px;
+    height: 4px;
 }
 ::-webkit-scrollbar-track {
     background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-    background: #ddd;
+    background: #E4E0D7;
     border-radius: 99px;
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: #bbb;
+    background: #C2BEB4;
+}
+
+/* Smooth focus */
+input:focus, textarea:focus, select:focus, button:focus-visible {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+}
+
+::selection {
+    background-color: var(--color-primary-light);
+    color: var(--color-text);
+}
+
+/* Custom editorial components */
+.editorial-title {
+    font-family: var(--font-serif);
+    font-weight: 300;
+    font-style: italic;
+}
+.claude-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px -2px rgba(96, 94, 90, 0.05);
+    transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.claude-card:hover {
+    border-color: var(--color-border-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px -4px rgba(96, 94, 90, 0.08);
 }

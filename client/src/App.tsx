@@ -6,10 +6,12 @@ import { Accounts } from "./pages/Accounts";
 import { AiComposer } from "./pages/AiComposer";
 import { Layout } from "./components/layout";
 import { Scheduler } from "./pages/Scheduler";
+import { Toaster } from "react-hot-toast";
 
 export default function App() {
     return (
         <>
+        <Toaster position="top-right"/>
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login />} />

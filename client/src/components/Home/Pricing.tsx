@@ -1,5 +1,6 @@
 import { CheckIcon, CircleCheckBigIcon } from "lucide-react";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const pricingPlans = [
     {
@@ -33,51 +34,79 @@ const pricingPlans = [
 
 export default function Pricing() {
     return (
-        <section id="pricing" className="py-24 bg-white">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6">
-                <div className="text-center mb-16">
-                    <div className="mb-6 inline-flex items-center gap-1.5 bg-red-500/10 border border-red-500/15 text-red-500 text-[11px] font-medium tracking-[0.06em] uppercase px-3.5 py-1.5 rounded-full">
-                        <CircleCheckBigIcon className="size-3" />
-                        Simple pricing
-                    </div>
-                    <h2 className="font-serif font-medium text-4xl sm:text-5xl leading-tight text-gray-900">
-                        Plans for every stage
-                        <br />
-                        <span className="text-red-400 italic">of growth</span>
+        <section id="pricing" className="py-24 bg-white border-b border-border">
+            <div className="max-w-5xl mx-auto px-6">
+                
+                {/* Header */}
+                <div className="text-center max-w-xl mx-auto mb-16 space-y-4">
+                    <span className="text-[10px] font-bold text-primary bg-primary-subtle border border-primary-light px-3 py-1 rounded-full uppercase tracking-wider">
+                         Pricing Model
+                    </span>
+                    <h2 className="text-3xl sm:text-5xl font-serif font-light text-text leading-tight">
+                         Honest plans for <span className="font-serif italic font-normal text-primary">every builder.</span>
                     </h2>
-                    <p className="mt-5 text-gray-500 max-w-md mx-auto">Start free, upgrade when you're ready. Cancel anytime — no hidden fees.</p>
+                    <p className="text-sm text-text-secondary leading-relaxed font-medium">
+                         Start with our developer sandbox plan, and scale as your traffic grows.
+                    </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-5 items-start">
-                    {pricingPlans.map((plan) => (
-                        <div key={plan.name} className={`rounded-2xl border p-7 flex flex-col gap-6 relative ${plan.highlight ? "bg-red-500 text-white border-red-400 shadow-2xl shadow-red-100" : "bg-white text-slate-900 border-slate-200"}`}>
-                            {plan.highlight && <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-xs font-bold px-3.5 py-1.5 rounded-full">Most Popular</div>}
-                            <div>
-                                <div className={`text-sm font-semibold mb-1 ${plan.highlight ? "text-red-100" : "text-red-500"}`}>{plan.name}</div>
-                                <div className="flex items-end gap-1">
-                                    <span className="text-4xl font-bold">{plan.price}</span>
-                                    <span className={`text-sm mb-1.5 ${plan.highlight ? "text-red-200" : "text-slate-400"}`}>{plan.period}</span>
+                {/* Staggered Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
+                    {pricingPlans.map((plan, i) => (
+                        <motion.div
+                            key={plan.name}
+                            initial={{ opacity: 0, y: 15 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, margin: "-30px" }}
+                            transition={{ duration: 0.5, delay: i * 0.1 }}
+                            className={`rounded-2xl border p-6.5 flex flex-col justify-between gap-6 transition-all duration-300 ${
+                                 plan.highlight 
+                                      ? "bg-primary-subtle border-primary-light shadow-md" 
+                                      : "bg-white border-border hover:border-border-hover hover:shadow-xs"
+                            }`}
+                        >
+                            <div className="space-y-4">
+                                <div className="flex items-center justify-between">
+                                     <span className="text-xs font-bold uppercase tracking-wider text-primary">{plan.name}</span>
+                                     {plan.highlight && (
+                                          <span className="text-[9px] font-bold uppercase tracking-widest text-white bg-primary px-2 py-0.5 rounded-full">
+                                               Popular
+                                          </span>
+                                     )}
                                 </div>
-                                <p className={`text-sm mt-2 leading-relaxed ${plan.highlight ? "text-red-100" : "text-slate-500"}`}>{plan.description}</p>
+                                <div className="flex items-baseline gap-1">
+                                     <span className="text-3xl font-serif font-semibold text-text">{plan.price}</span>
+                                     <span className="text-xs text-text-muted font-medium">{plan.period}</span>
+                                </div>
+                                <p className="text-xs text-text-secondary leading-relaxed font-medium">
+                                     {plan.description}
+                                </p>
+                                <ul className="space-y-2.5 pt-4 border-t border-border/60">
+                                     {plan.features.map((f) => (
+                                          <li key={f} className="flex items-center gap-2.5 text-xs font-medium text-text-secondary">
+                                               <div className="size-4.5 rounded-xl bg-white border border-border flex items-center justify-center shrink-0">
+                                                    <CheckIcon className="size-3 text-primary" />
+                                               </div>
+                                               <span>{f}</span>
+                                          </li>
+                                     ))}
+                                </ul>
                             </div>
 
-                            <ul className="space-y-2.5">
-                                {plan.features.map((f) => (
-                                    <li key={f} className="flex items-center gap-2.5 text-sm">
-                                        <div className={`size-4 rounded-full flex items-center justify-center shrink-0 ${plan.highlight ? "bg-red-400" : "bg-red-50"}`}>
-                                            <CheckIcon className={`w-2.5 h-2.5 ${plan.highlight ? "text-white" : "text-red-500"}`} />
-                                        </div>
-                                        <span className={plan.highlight ? "text-red-50" : "text-slate-600"}>{f}</span>
-                                    </li>
-                                ))}
-                            </ul>
-
-                            <Link to="/#" className={`mt-auto text-center font-semibold text-sm px-6 py-3 rounded-full ${plan.highlight ? "bg-white text-red-500 hover:bg-red-50" : "bg-red-500 text-white hover:bg-red-600"}`}>
-                                {plan.cta}
+                            <Link 
+                                 to="/login" 
+                                 className={`w-full text-center font-bold uppercase tracking-wider text-[10px] py-3 rounded-xl transition-all duration-200 ${
+                                      plan.highlight 
+                                           ? "bg-primary hover:bg-primary-hover text-white shadow-xs" 
+                                           : "bg-bg text-text-secondary border border-border hover:border-border-hover hover:bg-white"
+                                 }`}
+                            >
+                                 {plan.cta}
                             </Link>
-                        </div>
+                        </motion.div>
                     ))}
                 </div>
+
             </div>
         </section>
     );

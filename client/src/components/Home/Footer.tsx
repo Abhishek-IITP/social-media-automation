@@ -8,26 +8,28 @@ const footerLinks = {
 
 export default function Footer() {
     return (
-        <footer style={{ background: "#fafafa", borderTop: "1px solid rgba(0,0,0,0.07)" }}>
-            <div className="max-w-6xl mx-auto px-5 sm:px-8 py-16">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-12 mb-16">
+        <footer className="bg-bg border-t border-border">
+            <div className="max-w-5xl mx-auto px-6 py-16">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-12 mb-12">
                     {/* Brand */}
-                    <div className="lg:col-span-2">
-                        <Link to="/" onClick={() => scrollTo(0, 0)} className="inline-flex items-center gap-2 mb-5">
-                            <img src="/logo.svg" alt="logo" className="size-6" />
-                            <span className="font-medium font-serif text-xl text-gray-800">Scheduler</span>
+                    <div className="lg:col-span-2 space-y-4">
+                        <Link to="/" onClick={() => scrollTo(0, 0)} className="inline-flex items-center gap-2">
+                            <img src="/logo.svg" alt="logo" className="size-5.5" />
+                            <span className="font-serif italic font-semibold text-lg text-text">Scheduler</span>
                         </Link>
-                        <p className="text-sm text-gray-500 leading-relaxed max-w-xs">The AI-powered social media scheduler that helps creators and teams grow faster with less effort.</p>
+                        <p className="text-xs text-text-secondary leading-relaxed max-w-xs font-medium">
+                            An elegant social media editor that makes publishing across multiple workspaces effortless.
+                        </p>
                     </div>
 
                     {/* Links */}
                     {Object.entries(footerLinks).map(([category, links]) => (
-                        <div key={category}>
-                            <div className="text-xs font-semibold uppercase tracking-widest mb-5 text-gray-600">{category}</div>
-                            <ul className="space-y-1">
+                        <div key={category} className="space-y-4">
+                            <div className="text-[10px] font-bold uppercase tracking-wider text-text-secondary">{category}</div>
+                            <ul className="space-y-1.5">
                                 {links.map((link) => (
                                     <li key={link}>
-                                        <a href="#" className="text-sm text-gray-500 hover:text-gray-900">
+                                        <a href="#" className="text-xs text-text-muted hover:text-text transition-colors duration-200 font-medium">
                                             {link}
                                         </a>
                                     </li>
@@ -38,16 +40,16 @@ export default function Footer() {
                 </div>
 
                 {/* Bottom bar */}
-                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8" style={{ borderTop: "1px solid rgba(0,0,0,0.07)" }}>
-                    <p className="text-xs text-gray-400">© {new Date().getFullYear()} Scheduler. All rights reserved.</p>
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-border">
+                    <p className="text-[10px] font-semibold text-text-muted">© {new Date().getFullYear()} Scheduler. All rights reserved.</p>
                     <div className="flex items-center gap-6">
-                        <a href="#" className="text-xs text-gray-400 hover:text-gray-700">
+                        <a href="#" className="text-[10px] font-semibold text-text-muted hover:text-text transition-colors duration-200">
                             Privacy Policy
                         </a>
-                        <a href="#" className="text-xs text-gray-400 hover:text-gray-700">
+                        <a href="#" className="text-[10px] font-semibold text-text-muted hover:text-text transition-colors duration-200">
                             Terms of Service
                         </a>
-                        <Link to="/login" className="text-xs text-gray-400 hover:text-gray-700">
+                        <Link to="/login" className="text-[10px] font-semibold text-text-muted hover:text-text transition-colors duration-200">
                             Sign In
                         </Link>
                     </div>
