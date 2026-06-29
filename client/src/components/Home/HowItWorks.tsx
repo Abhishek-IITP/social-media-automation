@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 const steps = [
     { step: "01", title: "Authorize workspaces", description: "Connect your social channel accounts in a single click using OAuth flow endpoints." },
     { step: "02", title: "Draft and review", description: "Utilize our AI generation prompts or write your calendar updates manually." },
-    { step: "03", title: "Automate delivery", description: "Configure peak publish times, select destinations, and let the scheduler coordinate." },
+    { step: "03", title: "Automate delivery", description: "Configure peak publish times, select destinations, and let the NexaPost coordinate." },
 ];
 
 export default function HowItWorks() {

@@ -10,7 +10,7 @@ export default function Navbar() {
             <div className="max-w-5xl mx-auto px-6 h-16 flex items-center justify-between">
                 <Link to="/" onClick={() => scrollTo(0, 0)} className="flex items-center gap-2">
                     <img src="/logo.svg" alt="logo" className="size-6 opacity-90" />
-                    <span className="text-lg font-serif italic font-semibold text-text tracking-tight">Scheduler</span>
+                    <span className="text-lg font-serif italic font-semibold text-text tracking-tight">NexaPost</span>
                 </Link>
                 <div className="hidden sm:flex items-center gap-8 text-xs font-semibold uppercase tracking-wider text-text-secondary">
                     <a href="#features" className="hover:text-primary transition-colors duration-200">

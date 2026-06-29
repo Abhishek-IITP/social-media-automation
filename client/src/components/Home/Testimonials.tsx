@@ -11,7 +11,7 @@ const testimonials = [
         name: "Marcus L.",
         role: "Indie Creator",
         avatar: "M",
-        text: "Scheduler's minimal interface is its superpower. I planning and queuing a full week of copy in under 15 minutes.",
+        text: "NexaPost's minimal interface is its superpower. I planning and queuing a full week of copy in under 15 minutes.",
     },
     {
         name: "Priya D.",

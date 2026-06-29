@@ -48,7 +48,7 @@ export default function Login() {
                     <div className="flex flex-col items-center mb-8">
                         <Link to="/" className="flex items-center gap-2">
                             <img src="/logo.svg" alt="Logo" className="size-6.5" />
-                            <h1 className="text-2xl font-heading text-text">Scheduler</h1>
+                            <h1 className="text-2xl font-heading text-text">NexaPost</h1>
                         </Link>
                         <p className="text-text-secondary text-sm mt-1">Sign in to your Dashboard</p>
                     </div>

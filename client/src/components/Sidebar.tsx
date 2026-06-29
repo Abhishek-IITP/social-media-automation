@@ -12,7 +12,7 @@ export function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (va
           { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
           { name: "Accounts", icon: UserIcon, path: "/accounts" },
           { name: "Ai Composer", icon: Wand2Icon, path: "/ai-composer" },
-          { name: "Scheduler", icon: CalendarDaysIcon, path: "/scheduler" }
+          { name: "scheduler", icon: CalendarDaysIcon, path: "/scheduler" }
      ]
 
      return (
@@ -20,7 +20,7 @@ export function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (va
                {/* Editorial Brand Header */}
                <div className="p-6 pb-6">
                     <div className="text-md font-serif italic font-semibold text-text flex items-center gap-2">
-                         <img src="/logo.svg" alt="logo" className="size-5 opacity-95" /> Scheduler
+                         <img src="/logo.svg" alt="logo" className="size-5 opacity-95" /> NexaPost
                     </div>
                </div>
 
