@@ -1,73 +1,79 @@
 import { CalendarDaysIcon, Wand2Icon, Share2Icon, ZapIcon, BarChart3Icon, HashIcon } from "lucide-react";
+import { motion } from "framer-motion";
 
 const features = [
     {
         icon: CalendarDaysIcon,
         title: "Smart Scheduling",
-        description: "Queue posts across all platforms with a single click. Set it once and let us handle the rest.",
-        color: "bg-red-50 text-red-500",
+        description: "Draft your updates, set your platforms, and leave the queueing to our system.",
     },
     {
         icon: Wand2Icon,
-        title: "AI Content Generator",
-        description: "Generate on-brand captions and stunning images with our built-in AI. Never stare at a blank page again.",
-        color: "bg-red-50 text-red-500",
+        title: "AI Composer Engine",
+        description: "Generate copy and images tailored to your specific platforms using local prompts.",
     },
-
     {
         icon: BarChart3Icon,
         title: "Activity Dashboard",
-        description: "Get a bird's eye view of all published posts, scheduled content, and engagement activity in one place.",
-        color: "bg-red-50 text-red-500",
+        description: "Keep track of all operations and scheduling events in a unified minimal timeline.",
     },
     {
         icon: Share2Icon,
-        title: "Multi-Platform",
-        description: "Connect Twitter, LinkedIn, Facebook, and Instagram. Post everywhere from one unified workspace.",
-        color: "bg-red-50 text-red-500",
+        title: "Multi-Platform Channels",
+        description: "Connected to Twitter, LinkedIn, Facebook, and Instagram workspaces.",
     },
     {
         icon: ZapIcon,
         title: "Instant Publishing",
-        description: "Need to go live now? Publish immediately or schedule for peak engagement times with full timezone support.",
-        color: "bg-red-50 text-red-500",
+        description: "Publish content immediately with full attachment and platform verification support.",
     },
     {
         icon: HashIcon,
         title: "Hashtag Suggestions",
-        description: "Get AI-powered hashtag suggestions to reach a wider audience.",
-        color: "bg-red-50 text-red-500",
+        description: "Extract optimized hashtags from your copy automatically via AI helpers.",
     },
 ];
 
 export default function Features() {
     return (
-        <section id="features" className="py-24 bg-slate-50">
-            <div className="max-w-6xl mx-auto px-4 sm:px-6">
-                <div className="text-center mb-16">
-                    <div className="mb-6 inline-flex items-center gap-1.5 bg-red-500/10 border border-red-500/15 text-red-500 text-[11px] font-medium tracking-[0.06em] uppercase px-3.5 py-1.5 rounded-full">
-                        <ZapIcon className="size-3" />
-                        Everything you need
-                    </div>
-                    <h2 className="font-serif text-4xl sm:text-5xl font-medium leading-tight text-gray-900">
-                        Automate your entire
-                        <br />
-                        <span className="text-red-400 italic">social media workflow</span>
+        <section id="features" className="py-24 bg-bg border-b border-border">
+            <div className="max-w-5xl mx-auto px-6">
+                
+                {/* Asymmetric Header */}
+                <div className="max-w-xl text-left mb-16 space-y-4">
+                    <span className="text-[10px] font-bold text-primary bg-primary-subtle border border-primary-light px-3 py-1 rounded-full uppercase tracking-wider">
+                         Refined Utilities
+                    </span>
+                    <h2 className="text-3xl sm:text-5xl font-serif font-light text-text leading-tight">
+                         Engineered to automate your <span className="font-serif italic font-normal text-primary">social presence.</span>
                     </h2>
-                    <p className="mt-5 text-gray-500 max-w-xl mx-auto leading-relaxed">From content creation to scheduling — Scheduler handles it all so you can focus on what matters most.</p>
+                    <p className="text-sm text-text-secondary leading-relaxed font-medium">
+                         A thoughtful collection of tools designed to remove friction from content writing and calendar planning.
+                    </p>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                    {features.map((f) => (
-                        <div key={f.title} className="bg-white rounded-2xl border border-slate-100 p-6 hover:border-slate-200 hover:shadow-md hover:shadow-slate-100 group">
-                            <div className={`size-10 rounded-xl flex items-center justify-center mb-4 ${f.color}`}>
-                                <f.icon className="size-5" />
+                {/* Editorial Columns */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10 border-t border-border pt-12">
+                    {features.map((f, i) => (
+                        <motion.div
+                            key={f.title}
+                            initial={{ opacity: 0, y: 15 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, margin: "-30px" }}
+                            transition={{ duration: 0.5, delay: (i % 2) * 0.1 }}
+                            className="flex gap-4 items-start group"
+                        >
+                            <div className="size-9 rounded-lg bg-white border border-border flex items-center justify-center text-primary group-hover:bg-primary-subtle transition-all duration-200 shrink-0 shadow-xs">
+                                <f.icon className="size-4" />
                             </div>
-                            <h3 className=" text-slate-900 mb-2">{f.title}</h3>
-                            <p className="text-sm text-slate-500/90 leading-relaxed">{f.description}</p>
-                        </div>
+                            <div className="space-y-1">
+                                <h3 className="text-text font-bold text-sm tracking-tight">{f.title}</h3>
+                                <p className="text-xs text-text-secondary leading-relaxed font-medium">{f.description}</p>
+                            </div>
+                        </motion.div>
                     ))}
                 </div>
+
             </div>
         </section>
     );

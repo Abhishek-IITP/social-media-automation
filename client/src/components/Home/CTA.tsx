@@ -1,42 +1,41 @@
 import { Link } from "react-router-dom";
 import { ArrowRightIcon } from "lucide-react";
+import { motion } from "framer-motion";
 
 export default function CTA() {
     return (
-        <section className="py-20" style={{ background: "#ffffff" }}>
-            <div className="max-w-6xl mx-auto px-5 sm:px-8">
-                <div
-                    className="relative rounded-3xl overflow-hidden p-14 sm:p-20 text-center"
-                    style={{
-                        background: "linear-gradient(145deg, #fff5f5 0%, #fef2f2 100%)",
-                        border: "1.5px solid rgba(239,68,68,0.12)",
-                    }}
+        <section className="py-24 bg-bg border-b border-border">
+            <div className="max-w-5xl mx-auto px-6">
+                <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true, margin: "-50px" }}
+                    transition={{ duration: 0.6 }}
+                    className="relative rounded-3xl overflow-hidden p-10 sm:p-16 text-center bg-[linear-gradient(135deg,#FDF6F2_0%,#F5E6DF_100%)] border border-primary-light"
                 >
-                    {/* Glow blobs */}
-                    <div className="absolute top-0 right-0 w-96 h-96 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(239,68,68,0.1) 0%, transparent 70%)" }} />
-                    <div className="absolute bottom-0 left-0 w-72 h-72 rounded-full pointer-events-none" style={{ background: "radial-gradient(circle, rgba(239,68,68,0.06) 0%, transparent 70%)" }} />
-
-                    <div className="relative">
-                        <div className="mb-6 inline-flex items-center gap-1.5 bg-red-500/10 border border-red-500/15 text-red-500 text-[11px] font-medium tracking-[0.06em] uppercase px-3.5 py-1.5 rounded-full">Ready to grow?</div>
-                        <h2 className="font-serif text-4xl sm:text-5xl md:text-6xl leading-tight font-medium text-gray-900">
-                            Automate your social
-                            <br />
-                            <span className="text-red-400 italic">media today</span>
+                    <div className="relative z-10 max-w-xl mx-auto space-y-6">
+                        <span className="text-[10px] font-bold text-primary bg-primary-subtle border border-primary-light px-3.5 py-1 rounded-full uppercase tracking-wider">
+                             Join the community
+                        </span>
+                        <h2 className="text-3xl sm:text-5xl font-serif font-light text-text leading-tight">
+                             Automate your calendar.
+                             <br />
+                             <span className="font-serif italic font-normal text-primary">Reclaim your attention.</span>
                         </h2>
-                        <p className="mt-6 text-gray-500 max-w-lg mx-auto  text-lg">Join thousands of creators and marketers who trust Scheduler to grow their audience on autopilot.</p>
+                        <p className="text-sm text-text-secondary leading-relaxed font-medium">
+                             Connected to all major networks. No credit card requested. Setup takes 3 minutes.
+                        </p>
 
-                        <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3">
-                            <Link to="/login" className="bg-red-500 text-white rounded-full font-semibold hover:bg-red-600 hover:shadow-[0_8px_24px_rgba(239,68,68,0.35)] inline-flex items-center gap-2 text-[15px] px-10 py-4 w-full sm:w-auto justify-center">
-                                Get Started Free <ArrowRightIcon className="size-4" />
+                        <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-4">
+                            <Link to="/login" className="bg-primary text-white rounded-xl font-bold uppercase tracking-wider text-xs px-8 py-3.5 hover:bg-primary-hover hover:shadow-lg transition-all duration-300 flex items-center justify-center gap-2 w-full sm:w-auto">
+                                Get Started Free <ArrowRightIcon className="size-3.5" />
                             </Link>
-                            <a href="#pricing" className="bg-transparent text-[#333] border-[1.5px] border-black/10 rounded-full font-medium hover:bg-black/5 hover:border-black/20 inline-flex items-center gap-2 text-[15px] px-10 py-4 w-full sm:w-auto justify-center">
-                                View Pricing
+                            <a href="#pricing" className="bg-white border border-border text-text-secondary rounded-xl font-bold uppercase tracking-wider text-xs px-8 py-3.5 hover:border-border-hover transition-all duration-300 flex items-center justify-center w-full sm:w-auto">
+                                Explore Pricing
                             </a>
                         </div>
-
-                        <p className="mt-6 text-xs text-gray-400">No credit card required · Cancel anytime</p>
                     </div>
-                </div>
+                </motion.div>
             </div>
         </section>
     );

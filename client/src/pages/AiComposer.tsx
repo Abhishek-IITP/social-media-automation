@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import { dummyGenerationData, PLATFORMS } from "../assets/assets";
-import { ArrowRightIcon, CalendarIcon, ClockIcon, HistoryIcon, Loader2, Loader2Icon, TimerIcon, Wand2Icon, XIcon } from "lucide-react";
-
+import { PLATFORMS } from "../assets/assets";
+import { ArrowRightIcon, CalendarIcon, ClockIcon, HistoryIcon, Loader2Icon, TimerIcon, Wand2Icon, XIcon, PencilIcon, CopyIcon, CheckIcon } from "lucide-react";
+import { api } from "../api/axios";
+import toast from "react-hot-toast";
+import { motion, AnimatePresence } from "framer-motion";
 
 export function AiComposer() {
      const [prompt, setPrompt] = useState("");
@@ -10,271 +12,344 @@ export function AiComposer() {
      const [loading, setLoading] = useState(false);
      const [generations, setGenerations] = useState<any[]>([]);
 
-
+     // Schedule modal
      const [activeScheduler, setActiveScheduler] = useState<any>(null);
      const [selectedPlatforms, setSelectedPlatforms] = useState<string[]>([]);
      const [scheduledDate, setScheduledDate] = useState("");
      const [scheduledTime, setScheduledTime] = useState("");
      const [scheduling, setScheduling] = useState(false);
 
+     // Edit mode
+     const [editingContent, setEditingContent] = useState("");
+     const [isEditing, setIsEditing] = useState(false);
+     const [copiedId, setCopiedId] = useState<string | null>(null);
 
      const fetchGenerations = async () => {
-          setGenerations(dummyGenerationData)
-     }
+          try {
+               const { data } = await api.get("api/posts/generations");
+               setGenerations(data);
+          } catch (err: any) {
+               toast.error(err?.response?.data?.message || err?.message);
+          }
+     };
 
-     useEffect(() => {
-          fetchGenerations();
-     }, [])
+     useEffect(() => { fetchGenerations(); }, []);
 
      const handleGenerate = async () => {
+          if (!prompt) { toast.error("Please enter a prompt"); return; }
           setLoading(true);
-          setTimeout(() => {
-               setLoading(false)
-          }, 2000)
+          try {
+               const { data } = await api.post("/api/posts/generate", { prompt, tone, generateImage });
+               toast.success("Content generated!");
+               fetchGenerations();
+               // Auto-open the result for editing
+               const gen = data.generation;
+               setActiveScheduler(gen);
+               setEditingContent(gen.content);
+               setIsEditing(false);
+          } catch (err: any) {
+               toast.error(err?.response?.data?.message || err?.message);
+          } finally {
+               setLoading(false);
+          }
+     };
 
-     }
      const handleSchedule = async () => {
+          if (!activeScheduler) return;
+          if (selectedPlatforms.length === 0) { toast.error("Select at least one platform"); return; }
+          if (!scheduledDate || !scheduledTime) { toast.error("Select date and time"); return; }
+
+          const scheduledFor = new Date(`${scheduledDate}T${scheduledTime}`).toISOString();
           setScheduling(true);
-          setTimeout(() => {
-               setScheduling(false)
-          }, 2000)
+          try {
+               await api.post("/api/posts", {
+                    content: editingContent || activeScheduler.content,
+                    mediaUrl: activeScheduler.mediaUrl,
+                    mediaType: activeScheduler.mediaType,
+                    platforms: selectedPlatforms,
+                    scheduledFor,
+                    status: "scheduled"
+               });
+               toast.success("Post scheduled!");
+               setActiveScheduler(null);
+               setScheduledDate("");
+               setScheduledTime("");
+               setSelectedPlatforms([]);
+               setIsEditing(false);
+          } catch (err: any) {
+               toast.error(err?.response?.data?.message || err?.message);
+          } finally {
+               setScheduling(false);
+          }
+     };
 
-     }
+     const handleCopy = (text: string, id: string) => {
+          navigator.clipboard.writeText(text);
+          setCopiedId(id);
+          toast.success("Copied to clipboard");
+          setTimeout(() => setCopiedId(null), 2000);
+     };
 
-     const tones = ["Professional", "Funny", "Creative", "Casual", "Enthusiastic", "Humorous", "Motivational", "Empathetic"];
+     const openSchedulerForGeneration = (g: any) => {
+          setActiveScheduler(g);
+          setEditingContent(g.content);
+          setIsEditing(false);
+          setSelectedPlatforms([]);
+          setScheduledDate("");
+          setScheduledTime("");
+     };
 
+     const tones = ["Professional", "Funny", "Creative", "Casual", "Enthusiastic", "Motivational"];
 
-     return <div className="max-w-4xl mx-auto space-y-12 pb-20 animate-in fade-in duration-700 ">
-          <header className="text-center pt-12">
-               <h1 className="text-3xl sm:text-5xl font-bold text-foreground mb-4">AI Post Composer</h1>
-               <p className="text-muted-foreground text-lg max-w-2xl mx-auto">Enter a topic and let AI generate engaging posts for your social media.</p>
-          </header>
+     return (
+          <div className="max-w-4xl space-y-10 pb-20">
+               {/* Header */}
+               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
+                    <h1 className="text-3xl font-serif text-text">AI Composer</h1>
+                    <p className="text-text-secondary mt-2 text-[15px]">Generate social media posts with AI, edit them, and schedule across your platforms.</p>
+               </motion.div>
 
-
-          {/*Input Section*/}
-
-          <div className="bg-background/50 backdrop-blur-md border border-border rounded-2xl shadow-sm p-6 sm:p-8">
-               <h2 className="text-2xl font-semibold text-foreground mb-2">Create New Post</h2>
-               <p className="text-muted-foreground text-sm mb-6">Enter a topic or idea, choose a tone, and let AI handle the rest.</p>
-               <div className="relative group">
+               {/* Composer Card */}
+               <motion.div
+                    initial={{ opacity: 0, y: 12 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.05 }}
+                    className="bg-white rounded-2xl border border-border p-6 space-y-5"
+               >
                     <textarea
                          value={prompt}
                          onChange={(e) => setPrompt(e.target.value)}
-                         placeholder="Enter a topic or idea..."
-                         className="resize-none w-full h-32 border border-border rounded-xl p-4 focus:outline-none focus:ring-2  transition-all duration-300 bg-transparent"
+                         placeholder="Describe what you want to post about..."
+                         className="w-full h-28 border border-border rounded-xl p-4 text-[15px] text-text resize-none focus:outline-none focus:border-primary transition-colors bg-bg/30"
                     />
 
-                    <div className="absolute bottom-4 right-2.5 flex items-center gap-3 text-sm">
-                         <button onClick={() => setGenerateImage(!generateImage)} className="flex items-center gap-3 bg-red-50 py-2 px-3 rounded-lg">
-                              <span>AI Image</span>
-                              <div className={`relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out focus:outline-none  ${generateImage ? "bg-red-500" : "bg-slate-200"}`} >
-                                   <span className={`pointer-events-none size-4 transform translate-y-0.5 rounded-full bg-white transition ${generateImage ? "translate-x-4.5" : "translate-x-0.5"}`} />
+                    {/* Tone pills */}
+                    <div className="flex flex-wrap gap-2">
+                         {tones.map((t) => (
+                              <button
+                                   key={t}
+                                   onClick={() => setTone(t)}
+                                   className={`px-4 py-2 rounded-full text-sm font-medium transition-all border cursor-pointer ${
+                                        tone === t
+                                             ? "bg-primary border-primary text-white"
+                                             : "bg-white text-text-secondary border-border hover:border-primary/30 hover:text-text"
+                                   }`}
+                              >
+                                   {t}
+                              </button>
+                         ))}
+                    </div>
+
+                    {/* Bottom row */}
+                    <div className="flex items-center justify-between pt-2">
+                         <button
+                              onClick={() => setGenerateImage(!generateImage)}
+                              className="flex items-center gap-3 text-sm text-text-secondary cursor-pointer"
+                         >
+                              <div className={`relative w-10 h-[22px] rounded-full transition-colors ${generateImage ? "bg-primary" : "bg-border"}`}>
+                                   <div className={`absolute top-[3px] size-4 rounded-full bg-white shadow-sm transition-transform ${generateImage ? "left-[22px]" : "left-[3px]"}`} />
                               </div>
+                              Include AI image
                          </button>
 
-                         <button onClick={handleGenerate} disabled={loading} className="bg-slate-900 hover:bg-slate-800 text-white flex items-center gap-2 px-4 py-2 rounded-lg">
-                              {loading ? (
-                                   <>
-                                        <Loader2Icon className="size-4 animate-spin" />
-                                        <span>Generating....</span>
-                                   </>
-                              ) : (
-                                   <>
-                                        Generate
-                                        <ArrowRightIcon className="size-4" />
-                                   </>
-                              )}
+                         <button
+                              onClick={handleGenerate}
+                              disabled={loading}
+                              className="bg-primary hover:bg-primary-hover text-white px-6 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2 transition-all disabled:opacity-50 cursor-pointer shadow-sm"
+                         >
+                              {loading ? <><Loader2Icon className="size-4 animate-spin" /> Generating...</> : <>Generate <ArrowRightIcon className="size-4" /></>}
                          </button>
                     </div>
-               </div>
+               </motion.div>
 
-               <div className="flex flex-wrap justify-center gap-2">
+               {/* Generations */}
+               <div className="space-y-5">
+                    <div className="flex items-center justify-between">
+                         <h2 className="text-lg font-semibold text-text flex items-center gap-2">
+                              <HistoryIcon className="size-5 text-text-muted" /> Generated Posts
+                         </h2>
+                         <span className="text-sm text-text-muted">{generations.length} drafts</span>
+                    </div>
 
-                    {tones.map((t) => (
-                         <button key={t} onClick={() => { setTone(t) }} className={` px-4 py-1.5 rounded-full text-sm transition-all border ${tone === t ? "border-red-400 bg-red-500 text-white" : " bg-white text-slate-600 border-slate-200 hover:border-slate-400 hover:text-slate-800"}`}>
-                              {t}
-                         </button>
-                    ))}
-
-                    <div className="space-y-6 pt-12 border-t border-slate-200">
-                         <div className="flex items-center justify-between text-slate-600">
-                              <div className="flex items-center gap-3">
-                                   <HistoryIcon className="size-5" />
-                                   <h2 className="text-xl">
-                                        Recent Generations
-                                   </h2>
-                              </div>
-                              <span className="text-sm text-slate-500 bg-slate-50 px-2">
-                                   {generations.length} total
-                              </span>
-
+                    {generations.length === 0 ? (
+                         <div className="bg-white rounded-2xl border border-dashed border-border py-16 text-center">
+                              <Wand2Icon className="size-8 text-border mx-auto mb-3" />
+                              <p className="text-text-secondary font-medium">No drafts yet</p>
+                              <p className="text-sm text-text-muted mt-1">Enter a prompt above and generate your first post.</p>
                          </div>
-
-                         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols:3 gap-6">
+                    ) : (
+                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                               {generations.map((g) => (
-                                   <div className="group bg-white rounded-2xl border border-slate-100 p-5 hover:border-red-200 transition-all relative overflow-hidden" key={g._id}>
-                                        <div className="flex flex-col h-full space-y-4">
-                                             <div className="flex items-center justify-between">
-                                                  <span className="text-xs text-slate-400 uppercase tracking-widest">
-                                                       {new Date(g.createdAt).toLocaleString()}
-
-                                                  </span>
-                                                  <span className="text-xs text-red-500 bg-red-50 px-2 py-0.5 rounded-md">
-                                                       {g.tone}
-                                                  </span>
-
-                                             </div>
-
-                                             <p className="text-sm text-slate-600 line-clamp-3 leading-relaxed flex-1" >{g.content}</p>
-                                             {g.mediaUrl && (
-                                                  <div className="rounded-xl overflow-hidden border border-slate-100 bg-slate-50">
-                                                       <img src={g.mediaUrl} alt="Generated Image" className="w-full aspect-video  object-cover opacity-90 group-hover:opacity-100 transition-opacity rounded-lg " />
-                                                  </div>
-                                             )}
-
-                                             <div className="flex items-center gap-2 pt-2">
-                                                  <button onClick={() => setActiveScheduler(g)} className="flex-1 bg-slate-100 hover:bg-red-500 hover:text-white text-slate-600 text-xs py-2.5 rounded-lg transition-all">
-                                                       Schedule post
-                                                  </button>
-                                             </div>
+                                   <motion.div
+                                        key={g._id}
+                                        initial={{ opacity: 0, y: 10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        className="bg-white rounded-2xl border border-border p-5 flex flex-col gap-4 hover:border-primary/20 transition-colors group"
+                                   >
+                                        <div className="flex items-center justify-between">
+                                             <span className="text-xs text-text-muted">
+                                                  {new Date(g.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                                             </span>
+                                             <span className="text-xs font-medium text-primary bg-primary-subtle px-2.5 py-1 rounded-full">{g.tone}</span>
                                         </div>
-                                   </div>
+
+                                        <p className="text-sm text-text leading-relaxed line-clamp-4">{g.content}</p>
+
+                                        {g.mediaUrl && (
+                                             <div className="rounded-xl overflow-hidden border border-border">
+                                                  <img src={g.mediaUrl} alt="AI Generated" className="w-full aspect-video object-cover" />
+                                             </div>
+                                        )}
+
+                                        <div className="flex gap-2 mt-auto pt-2">
+                                             <button
+                                                  onClick={() => openSchedulerForGeneration(g)}
+                                                  className="flex-1 bg-primary text-white text-sm font-medium py-2.5 rounded-xl hover:bg-primary-hover transition-colors cursor-pointer flex items-center justify-center gap-1.5"
+                                             >
+                                                  <PencilIcon className="size-3.5" /> Edit & Schedule
+                                             </button>
+                                             <button
+                                                  onClick={() => handleCopy(g.content, g._id)}
+                                                  className="px-3 py-2.5 rounded-xl border border-border text-text-secondary hover:bg-bg transition-colors cursor-pointer"
+                                                  title="Copy content"
+                                             >
+                                                  {copiedId === g._id ? <CheckIcon className="size-4 text-emerald-600" /> : <CopyIcon className="size-4" />}
+                                             </button>
+                                        </div>
+                                   </motion.div>
                               ))}
                          </div>
-
-                    </div>
-                    {
-                         generations.length === 0 && (
-                              <div className=" flex items-center justify-center flex-col mx-auto p-8 bg-slate-50 rounded-xl">
-                                   <div className="size-12 bg-slate-100 rounded-full flex items-center justify-center  mb-4">
-                                        <Wand2Icon className="size-6 text-slate-300" />
-                                   </div>
-                                   <h2 className="text-lg text-slate-500 mb-1">No generations yet</h2>
-                                   <p className="text-sm text-slate-400">Generate your first post to see it here</p>
-                              </div>
-                         )
-                    }
+                    )}
                </div>
-          </div>
 
-          {activeScheduler && (
-               <div className="fixed inset-0 min-h-screen z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-md animate-in fade-in duration-300">
-                    <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl border border-slate-100 overflow-hidden flex flex-col max-h-[90vh] animate-in slide-in-from-bottom-4">
-                         <div className="flex items-center justify-between px-8 py-4 border-b border-slate-100 bg-slate-50/30">
-                              <h3 className="text-slate-900">Schedule Generation</h3>
-
-                              <button
-                                   onClick={() => setActiveScheduler(null)}
-                                   className="p-2 rounded-full hover:bg-slate-100 text-slate-400 transition-colors"
+               {/* Edit & Schedule Modal */}
+               <AnimatePresence>
+                    {activeScheduler && (
+                         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm" onClick={() => setActiveScheduler(null)}>
+                              <motion.div
+                                   initial={{ opacity: 0, scale: 0.96, y: 12 }}
+                                   animate={{ opacity: 1, scale: 1, y: 0 }}
+                                   exit={{ opacity: 0, scale: 0.96, y: 12 }}
+                                   transition={{ duration: 0.2 }}
+                                   onClick={(e) => e.stopPropagation()}
+                                   className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl border border-border flex flex-col max-h-[90vh] overflow-hidden"
                               >
-                                   <XIcon className="size-5" />
-                              </button>
-                         </div>
-
-                         <div className="flex-1 overflow-y-auto p-8 space-y-4">
-                              <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100 space-y-4">
-                                   <p className="text-slate-800 text-sm leading-relaxed whitespace-pre-wrap">
-                                        {activeScheduler.prompt}
-                                   </p>
-                              </div>
-
-                              <div className="bg-slate-50 rounded-2xl p-6 border border-slate-100 space-y-4">
-                                   <p className="text-slate-800 text-sm leading-relaxed whitespace-pre-wrap">
-                                        {activeScheduler.content}
-                                   </p>
-
-                                   {activeScheduler.mediaUrl && (
-                                        <img
-                                             src={activeScheduler.mediaUrl}
-                                             alt="preview"
-                                             className="w-full aspect-video object-cover rounded-xl border border-slate-200 shadow-sm"
-                                        />
-                                   )}
-                              </div>
-                         </div>
-
-                         <div className="p-8 bg-slate-50/50 border-t border-slate-50 space-y-8">
-                              <div className="space-y-6">
-
-                                   <div>
-                                        <label className="block text-xs text-slate-600 uppercase tracking-widest mb-4">
-                                             Select Channels
-                                        </label>
-
-                                        <div className="flex flex-wrap gap-2">
-                                             {PLATFORMS.map((p) => {
-                                                  const active = selectedPlatforms.includes(p.id);
-
-                                                  return (
-                                                       <button
-                                                            key={p.id}
-                                                            onClick={() =>
-                                                                 setSelectedPlatforms((prev) =>
-                                                                      prev.includes(p.id)
-                                                                           ? prev.filter((x) => x !== p.id)
-                                                                           : [...prev, p.id]
-                                                                 )
-                                                            }
-                                                            className={`p-2.5 rounded-md border text-xs ${active
-                                                                 ? "bg-red-500/80 text-white"
-                                                                 : "bg-white border-slate-200 text-slate-400 hover:border-slate-300"
-                                                                 }`}
-                                                       >
-                                                            <p.icon className="size-4.5" />
-                                                       </button>
-                                                  );
-                                             })}
-                                        </div>
+                                   {/* Modal Header */}
+                                   <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+                                        <h3 className="text-lg font-semibold text-text">Edit & Schedule</h3>
+                                        <button onClick={() => setActiveScheduler(null)} className="p-1.5 rounded-lg text-text-muted hover:bg-bg transition-colors cursor-pointer">
+                                             <XIcon className="size-5" />
+                                        </button>
                                    </div>
 
+                                   {/* Modal Body */}
+                                   <div className="flex-1 overflow-y-auto p-6 space-y-5">
+                                        {/* Editable Content */}
+                                        <div>
+                                             <div className="flex items-center justify-between mb-2">
+                                                  <label className="text-sm font-medium text-text">Post Content</label>
+                                                  <button
+                                                       onClick={() => {
+                                                            if (isEditing) {
+                                                                 toast.success("Changes saved");
+                                                            }
+                                                            setIsEditing(!isEditing);
+                                                       }}
+                                                       className="text-sm text-primary font-medium flex items-center gap-1 cursor-pointer hover:underline"
+                                                  >
+                                                       <PencilIcon className="size-3.5" />
+                                                       {isEditing ? "Save edits" : "Edit content"}
+                                                  </button>
+                                             </div>
 
-                                   
+                                             {isEditing ? (
+                                                  <textarea
+                                                       value={editingContent}
+                                                       onChange={(e) => setEditingContent(e.target.value)}
+                                                       className="w-full min-h-[160px] border border-primary rounded-xl p-4 text-sm text-text resize-none focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
+                                                       autoFocus
+                                                  />
+                                             ) : (
+                                                  <div
+                                                       onClick={() => { setIsEditing(true); }}
+                                                       className="w-full min-h-[100px] border border-border rounded-xl p-4 text-sm text-text leading-relaxed whitespace-pre-wrap cursor-text hover:border-primary/30 transition-colors bg-bg/30"
+                                                  >
+                                                       {editingContent}
+                                                  </div>
+                                             )}
+                                             <p className="text-xs text-text-muted mt-1.5">Click "Edit content" or click the text to add hashtags, links, or modify the copy.</p>
+                                        </div>
 
+                                        {/* Media Preview */}
+                                        {activeScheduler.mediaUrl && (
+                                             <div>
+                                                  <label className="text-sm font-medium text-text mb-2 block">Attached Media</label>
+                                                  <img src={activeScheduler.mediaUrl} alt="preview" className="w-full aspect-video object-cover rounded-xl border border-border" />
+                                             </div>
+                                        )}
+                                   </div>
 
+                                   {/* Modal Footer — Scheduling Controls */}
+                                   <div className="p-6 border-t border-border bg-bg/30 space-y-4">
+                                        {/* Platform Selection */}
+                                        <div>
+                                             <label className="text-sm font-medium text-text mb-2 block">Publish to</label>
+                                             <div className="flex flex-wrap gap-2">
+                                                  {PLATFORMS.map((p) => {
+                                                       const active = selectedPlatforms.includes(p.id);
+                                                       return (
+                                                            <button
+                                                                 key={p.id}
+                                                                 onClick={() =>
+                                                                      setSelectedPlatforms((prev) =>
+                                                                           prev.includes(p.id) ? prev.filter((x) => x !== p.id) : [...prev, p.id]
+                                                                      )
+                                                                 }
+                                                                 className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-sm font-medium cursor-pointer transition-all ${
+                                                                      active ? "bg-primary border-primary text-white" : "bg-white border-border text-text-secondary hover:border-primary/30"
+                                                                 }`}
+                                                            >
+                                                                 <p.icon className="size-4" />
+                                                                 {p.name}
+                                                            </button>
+                                                       );
+                                                  })}
+                                             </div>
+                                        </div>
 
-                              </div>
+                                        {/* Date & Time */}
+                                        <div className="grid grid-cols-2 gap-4">
+                                             <div>
+                                                  <label className="text-sm font-medium text-text mb-1.5 block">Date</label>
+                                                  <div className="relative">
+                                                       <CalendarIcon className="size-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" />
+                                                       <input type="date" value={scheduledDate} onChange={(e) => setScheduledDate(e.target.value)}
+                                                            className="w-full pl-10 pr-3 py-2.5 border border-border rounded-xl text-sm focus:outline-none focus:border-primary transition-colors" />
+                                                  </div>
+                                             </div>
+                                             <div>
+                                                  <label className="text-sm font-medium text-text mb-1.5 block">Time</label>
+                                                  <div className="relative">
+                                                       <ClockIcon className="size-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" />
+                                                       <input type="time" value={scheduledTime} onChange={(e) => setScheduledTime(e.target.value)}
+                                                            className="w-full pl-10 pr-3 py-2.5 border border-border rounded-xl text-sm focus:outline-none focus:border-primary transition-colors" />
+                                                  </div>
+                                             </div>
+                                        </div>
+
+                                        <button
+                                             onClick={handleSchedule}
+                                             disabled={scheduling}
+                                             className="w-full bg-primary hover:bg-primary-hover text-white py-3 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 transition-all disabled:opacity-50 cursor-pointer shadow-sm"
+                                        >
+                                             {scheduling ? <Loader2Icon className="size-4 animate-spin" /> : <TimerIcon className="size-4" />}
+                                             Schedule Post
+                                        </button>
+                                   </div>
+                              </motion.div>
                          </div>
-                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-  <div className="relative">
-    <CalendarIcon className="size-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-
-    <input
-      type="date"
-      className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-md text-slate-900 text-sm focus:outline-none transition-all"
-      value={scheduledDate}
-      onChange={(e) => setScheduledDate(e.target.value)}
-    />
-  </div>
-
-  <div className="relative">
-    <ClockIcon className="size-4 absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
-
-    <input
-      type="time"
-      className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-100 rounded-md text-slate-900 text-sm focus:outline-none transition-all"
-      value={scheduledTime}
-      onChange={(e) => setScheduledTime(e.target.value)}
-    />
-  </div>
-</div>
-
-
-
-<button
-  onClick={handleSchedule}
-  className="w-full flex items-center justify-center gap-2 py-3 rounded-md bg-slate-200 text-slate-700 hover:bg-red-500 hover:text-white transition"
->
-  {scheduling ? (
-    <Loader2Icon className="size-4 animate-spin" />
-  ) : (
-    <TimerIcon className="size-4" />
-  )}
-
-  Schedule Post
-</button>
-                    </div>
-
-               </div>
-          )}
-     </div>
-}    
+                    )}
+               </AnimatePresence>
+          </div>
+     );
+}

@@ -1,11 +1,12 @@
 import { CheckCircleIcon, ExternalLink, XIcon } from "lucide-react";
 import { PLATFORMS } from "../assets/assets";
+import { motion } from "framer-motion";
 
-interface PlatformPickerProps{
+interface PlatformPickerProps {
     connectedIds: string[];
     connecting: string | null;
-    onClose: ()=> void;
-    onConnect: (platformId: string)=> void;
+    onClose: () => void;
+    onConnect: (platformId: string) => void;
 }
 
 export function PlatformPicker({
@@ -13,59 +14,69 @@ export function PlatformPicker({
     connecting,
     onClose,
     onConnect
-}: PlatformPickerProps){
+}: PlatformPickerProps) {
     return (
-        <div className=" fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md border border-slate-100">
-                <div className=" flex items-center justify-between px-6 py-4 shadow">
-                    <h3 className="text-slate-900 font-semibold text-lg">Chosse a Platform</h3>
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/30 backdrop-blur-sm" onClick={onClose}>
+            <motion.div
+                initial={{ opacity: 0, scale: 0.96, y: 12 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.96, y: 12 }}
+                transition={{ duration: 0.2 }}
+                onClick={(e) => e.stopPropagation()}
+                className="bg-white rounded-2xl shadow-2xl w-full max-w-md border border-border overflow-hidden"
+            >
+                {/* Header */}
+                <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+                    <h3 className="text-lg font-semibold text-text">Connect a Platform</h3>
                     <button
                         onClick={onClose}
-                        className="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-50 transition-colors"
-                        title="close"
+                        className="p-1.5 rounded-lg text-text-muted hover:bg-bg transition-colors cursor-pointer"
                     >
                         <XIcon className="size-5" />
                     </button>
-                    
                 </div>
 
-                <div className="p-6 flex flex-col gap-2">
-                    {PLATFORMS.map((p)=>{
-                        const isConnected = connectedIds.includes(p.id);
+                {/* Platform list */}
+                <div className="p-4 flex flex-col gap-2">
+                    {PLATFORMS.map((p) => {
+                        const isConnected = connectedIds.some((id) => id.startsWith(p.id));
                         const isConnecting = connecting === p.id;
-                        return(
+                        return (
                             <button
-                            key={p.id}
-                            disabled={isConnected || isConnecting}
-                            onClick={()=>onConnect(p.id)}
-                            className={`flex items-center  gap-3 px-4 py-3.5 rounded-xl transition-all cursor-pointer ${isConnected?"bg-red-50 border border-red-100 text-slate-700" :"border border-slate-100 hover:bg-slate-50"}`}
+                                key={p.id}
+                                disabled={isConnected || isConnecting}
+                                onClick={() => onConnect(p.id)}
+                                className={`flex items-center gap-4 px-4 py-3.5 rounded-xl transition-all border text-left cursor-pointer group ${
+                                    isConnected
+                                        ? "bg-primary-subtle border-primary-light text-text"
+                                        : "border-border hover:bg-bg hover:border-primary/20"
+                                }`}
                             >
-                                <p.icon className={`size-6 ${isConnected?"text-red-600":"text-slate-700"}`} />
-                                <span className={`font-medium text-sm ${isConnected?"text-red-700":"text-slate-700"}`}>{p.name}</span>
-
-                                <div className="flex-1 min-w-0">
-                                    <div className={`text-sm ${isConnected?"text-red-700":"text-slate-700"}`}>
-                                        {p.name}
-                                    </div>
-                                    <div className="text-xs text-slate-400 mt-0.5 truncate">
-                                        {isConnected?"Already connected":p.description}
-                                    </div>
-
+                                <div className={`size-10 rounded-xl flex items-center justify-center shrink-0 ${
+                                    isConnected ? "bg-white text-primary border border-primary-light" : "bg-bg text-text-secondary"
+                                }`}>
+                                    <p.icon className="size-5" />
                                 </div>
 
-                                {isConnected && <CheckCircleIcon className="size-5 text-red-600" />}
-                                {
-                                    isConnecting &&(
-                                        <div className="animate-spin rounded-full h-3 w-3 border-2 border-slate-300 border-t-slate-600" />
-                                    )
-                                }
-                                {!isConnected && !isConnecting && <ExternalLink className="size-3.5 text-slate-400 shrink-0"/>}
+                                <div className="flex-1 min-w-0">
+                                    <div className="text-sm font-semibold text-text">{p.name}</div>
+                                    <div className="text-xs text-text-muted mt-0.5">
+                                        {isConnected ? "Already connected" : p.description}
+                                    </div>
+                                </div>
+
+                                {isConnected && <CheckCircleIcon className="size-5 text-primary shrink-0" />}
+                                {isConnecting && (
+                                    <div className="animate-spin rounded-full size-4 border-2 border-primary-light border-t-primary shrink-0" />
+                                )}
+                                {!isConnected && !isConnecting && (
+                                    <ExternalLink className="size-4 text-text-muted shrink-0 group-hover:text-text-secondary transition-colors" />
+                                )}
                             </button>
                         )
                     })}
                 </div>
-
-            </div>
+            </motion.div>
         </div>
     )
 }

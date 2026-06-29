@@ -1,44 +1,52 @@
 import { ArrowRightIcon, CheckCircleIcon } from "lucide-react";
+import { motion } from "framer-motion";
 
 const steps = [
-    { step: "01", title: "Connect Your Accounts", description: "Link your social profiles in seconds. We support Twitter, LinkedIn, Facebook, and Instagram." },
-    { step: "02", title: "Create or Generate Content", description: "Write your own post or let our AI craft a caption and image based on your prompt." },
-    { step: "03", title: "Schedule & Publish", description: "Pick a time, select your platforms, and hit schedule. We handle publishing automatically." },
+    { step: "01", title: "Authorize workspaces", description: "Connect your social channel accounts in a single click using OAuth flow endpoints." },
+    { step: "02", title: "Draft and review", description: "Utilize our AI generation prompts or write your calendar updates manually." },
+    { step: "03", title: "Automate delivery", description: "Configure peak publish times, select destinations, and let the scheduler coordinate." },
 ];
 
 export default function HowItWorks() {
     return (
-        <section id="how-it-works" className="py-24 bg-white">
-            <div className="max-w-4xl mx-auto px-4 sm:px-6">
-                <div className="text-center mb-16">
-                    <div className="mb-6 inline-flex items-center gap-1.5 bg-red-500/10 border border-red-500/15 text-red-500 text-[11px] font-medium tracking-[0.06em] uppercase px-3.5 py-1.5 rounded-full">
-                        <CheckCircleIcon className="size-3" />
-                        Simple setup
-                    </div>
-                    <h2 className="font-serif font-medium text-4xl sm:text-5xl leading-tight text-gray-900">
-                        Up and running in <span className="text-red-400 italic">minutes</span>
+        <section id="how-it-works" className="py-24 bg-white border-b border-border">
+            <div className="max-w-5xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+                
+                {/* Left side: Content */}
+                <div className="lg:col-span-5 space-y-5 text-left">
+                    <span className="text-[10px] font-bold text-primary bg-primary-subtle border border-primary-light px-3 py-1 rounded-full uppercase tracking-wider">
+                         Integration flow
+                    </span>
+                    <h2 className="text-3xl sm:text-5xl font-serif font-light text-text leading-tight">
+                         A workflow that <span className="font-serif italic font-normal text-primary">just works.</span>
                     </h2>
-                    <p className="mt-5 text-gray-500 max-w-lg mx-auto leading-relaxed">No complicated onboarding, no steep learning curve. Just connect, create, and grow.</p>
+                    <p className="text-sm text-text-secondary leading-relaxed font-medium">
+                         Designed with minimalism and speed in mind. No complex forms or nested configuration interfaces.
+                    </p>
                 </div>
 
-                <div className="space-y-6">
+                {/* Right side: Modern Stacked Timeline */}
+                <div className="lg:col-span-7 space-y-4">
                     {steps.map((s, i) => (
-                        <div key={s.step} className="flex gap-6 items-start">
-                            <div className="shrink-0 size-12 rounded-2xl bg-red-50 border border-red-100 flex items-center justify-center">
-                                <span className="text-sm font-medium text-red-500">{s.step}</span>
+                        <motion.div
+                            key={s.step}
+                            initial={{ opacity: 0, y: 15 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true, margin: "-30px" }}
+                            transition={{ duration: 0.5, delay: i * 0.1 }}
+                            className="p-5 bg-bg border border-border rounded-2xl flex gap-5 items-start hover:border-border-hover transition-colors duration-200"
+                        >
+                            <div className="shrink-0 size-9 rounded-xl bg-white border border-border flex items-center justify-center text-primary text-xs font-bold shadow-xs">
+                                 {s.step}
                             </div>
-                            <div className="pt-1">
-                                <h3 className=" text-slate-900 mb-1">{s.title}</h3>
-                                <p className="text-slate-500 text-sm leading-relaxed">{s.description}</p>
+                            <div className="space-y-1">
+                                 <h3 className="text-text font-bold text-sm tracking-tight">{s.title}</h3>
+                                 <p className="text-text-secondary text-xs leading-relaxed font-medium">{s.description}</p>
                             </div>
-                            {i < steps.length - 1 && (
-                                <div className="hidden sm:block ml-auto shrink-0 self-center">
-                                    <ArrowRightIcon className="size-4 text-slate-200" />
-                                </div>
-                            )}
-                        </div>
+                        </motion.div>
                     ))}
                 </div>
+
             </div>
         </section>
     );
