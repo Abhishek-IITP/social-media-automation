@@ -1,5 +1,5 @@
 import { CalendarDaysIcon, LayoutDashboard, LogOutIcon, UserIcon, Wand2Icon } from "lucide-react"
-import { NavLink, useLocation } from "react-router-dom"
+import { NavLink, useLocation, useNavigate } from "react-router-dom"
 import { useAuth } from "../context/AuthContext";
 import { motion } from "framer-motion";
 
@@ -7,6 +7,7 @@ export function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (va
      const { logout, user } = useAuth();
      console.log("Context User:", user);
      const location = useLocation();
+     const navigate = useNavigate();
      
      const navItems = [
           { name: "Dashboard", icon: LayoutDashboard, path: "/dashboard" },
@@ -19,7 +20,7 @@ export function Sidebar({ isOpen, setIsOpen }: { isOpen: boolean, setIsOpen: (va
           <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-[#FBF9F6] border-r border-border flex flex-col h-full transform transition-transform duration-300 ease-in-out md:relative md:translate-x-0 ${isOpen ? "translate-x-0" : "-translate-x-full"}`}>
                {/* Editorial Brand Header */}
                <div className="p-6 pb-6">
-                    <div className="text-md font-serif italic font-semibold text-text flex items-center gap-2">
+                    <div onClick={() => navigate("/")} className="text-md cursor-pointer font-serif italic font-semibold text-text flex items-center gap-2">
                          <img src="/logo.svg" alt="logo" className="size-5 opacity-95" /> NexaPost
                     </div>
                </div>
