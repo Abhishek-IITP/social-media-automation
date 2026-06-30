@@ -41,9 +41,9 @@ export default function Features() {
                 
                 {/* Asymmetric Header */}
                 <div className="max-w-xl text-left mb-16 space-y-4">
-                    <span className="text-[10px] font-bold text-primary bg-primary-subtle border border-primary-light px-3 py-1 rounded-full uppercase tracking-wider">
+                    {/* <span className="text-[10px] font-bold text-primary bg-primary-subtle border border-primary-light px-3 py-1 rounded-full uppercase tracking-wider">
                          Refined Utilities
-                    </span>
+                    </span> */}
                     <h2 className="text-3xl sm:text-5xl font-serif font-light text-text leading-tight">
                          Engineered to automate your <span className="font-serif italic font-normal text-primary">social presence.</span>
                     </h2>

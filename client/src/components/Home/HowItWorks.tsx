@@ -13,9 +13,9 @@ export default function HowItWorks() {
                 
                 {/* Left side: Content */}
                 <div className="lg:col-span-5 space-y-5 text-left">
-                    <span className="text-[10px] font-bold text-primary bg-primary-subtle border border-primary-light px-3 py-1 rounded-full uppercase tracking-wider">
+                    {/* <span className="text-[10px] font-bold text-primary bg-primary-subtle border border-primary-light px-3 py-1 rounded-full uppercase tracking-wider">
                          Integration flow
-                    </span>
+                    </span> */}
                     <h2 className="text-3xl sm:text-5xl font-serif font-light text-text leading-tight">
                          A workflow that <span className="font-serif italic font-normal text-primary">just works.</span>
                     </h2>

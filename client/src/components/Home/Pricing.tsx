@@ -39,9 +39,9 @@ export default function Pricing() {
                 
                 {/* Header */}
                 <div className="text-center max-w-xl mx-auto mb-16 space-y-4">
-                    <span className="text-[10px] font-bold text-primary bg-primary-subtle border border-primary-light px-3 py-1 rounded-full uppercase tracking-wider">
+                    {/* <span className="text-[10px] font-bold text-primary bg-primary-subtle border border-primary-light px-3 py-1 rounded-full uppercase tracking-wider">
                          Pricing Model
-                    </span>
+                    </span> */}
                     <h2 className="text-3xl sm:text-5xl font-serif font-light text-text leading-tight">
                          Honest plans for <span className="font-serif italic font-normal text-primary">every builder.</span>
                     </h2>

@@ -5,6 +5,7 @@ import { GoogleGenAI } from "@google/genai";
 import { cloudinary } from "../config/cloudinary.js";
 import Generation from "../models/Generation.js";
 import Post from "../models/Post.js";
+import Account from "../models/Account.js";
 import axios from "axios";
 
 
@@ -167,6 +168,25 @@ export const schedulePosts= async(req:AuthRequest, res:Response):Promise<void>=>
                return;
           }
 
+          const connectedAccounts = await Account.find({
+               user: req.user?._id,
+               status: "connected"
+          });
+          const connectedPlatforms = connectedAccounts.map(acc => acc.platform.toLowerCase());
+
+          const unconnectedPlatforms = platformArray.filter(plat => {
+               const pNormalized = plat.trim().toLowerCase();
+               return !connectedPlatforms.some(connPlat => connPlat.startsWith(pNormalized));
+          });
+
+          if (unconnectedPlatforms.length > 0) {
+               res.status(400).json({
+                    success: false,
+                    message: `You are not connected to the following platforms: ${unconnectedPlatforms.join(", ")}. Please connect them first.`
+               });
+               return;
+          }
+
           let mediaUrl : string | undefined = req.body.mediaUrl;
           let mediaType : "image" | "video" | undefined = req.body.mediaType
 
@@ -213,4 +233,116 @@ export const schedulePosts= async(req:AuthRequest, res:Response):Promise<void>=>
           });
      }
 }
+
+export const deletePost = async(req:AuthRequest, res:Response):Promise<void>=>{
+     try {
+          const { id } = req.params;
+          const post = await Post.findOneAndDelete({ _id: id, user: req.user?._id });
+          if (!post) {
+               res.status(404).json({ success: false, message: "Post not found" });
+               return;
+          }
+          res.status(200).json({
+               success: true,
+               message: "Post deleted successfully"
+          });
+     } catch (error: any) {
+          res.status(500).json({
+               success: false,
+               message: error.message || "Failed to delete post"
+          });
+     }
+};
+
+export const updatePost = async(req:AuthRequest, res:Response):Promise<void>=>{
+     try {
+          const { id } = req.params;
+          const { content, platforms, scheduledFor, removeMedia } = req.body;
+
+          const post = await Post.findOne({ _id: id, user: req.user?._id });
+          if (!post) {
+               res.status(404).json({ success: false, message: "Post not found" });
+               return;
+          }
+
+          if (post.status !== "scheduled") {
+               res.status(400).json({ success: false, message: "Only scheduled posts can be edited." });
+               return;
+          }
+
+          let targetPlatform = post.platform;
+          if (platforms) {
+               let parsedPlatforms = platforms;
+               if (typeof platforms === "string") {
+                    try {
+                         parsedPlatforms = JSON.parse(platforms);
+                    } catch (error: any) {
+                         parsedPlatforms = platforms.split(",");
+                    }
+               }
+               const platformArray: string[] = Array.isArray(parsedPlatforms)
+                    ? parsedPlatforms
+                    : parsedPlatforms
+                    ? [parsedPlatforms]
+                    : [];
+
+               if (platformArray.length > 0) {
+                    targetPlatform = platformArray[0].trim().toLowerCase() as "twitter" | "linkedin" | "facebook" | "instagram" | "facebook_page" | "linkedin_page" | "instagram_business";
+               }
+          }
+
+          const connectedAccounts = await Account.find({
+               user: req.user?._id,
+               status: "connected"
+          });
+          const connectedPlatforms = connectedAccounts.map(acc => acc.platform.toLowerCase());
+          if (!connectedPlatforms.some(connPlat => connPlat.startsWith(targetPlatform))) {
+               res.status(400).json({
+                    success: false,
+                    message: `You are not connected to platform: ${targetPlatform}`
+               });
+               return;
+          }
+
+          let mediaUrl = post.mediaUrl;
+          let mediaType = post.mediaType;
+
+          if (req.file) {
+               const result = await new Promise<any>((resolve, reject) => {
+                    const stream = cloudinary.uploader.upload_stream(
+                         { resource_type: "auto", folder: "SOCIAL-MEDIA-AUTOMATION" },
+                         (error, uploadResult) => {
+                              if (error) reject(error);
+                              else resolve(uploadResult);
+                         }
+                    );
+                    stream.end(req.file!.buffer);
+               });
+               mediaUrl = result.secure_url;
+               mediaType = result.resource_type === "video" ? "video" : "image";
+          } else if (removeMedia === "true") {
+               mediaUrl = undefined;
+               mediaType = undefined;
+          }
+
+          post.content = content || post.content;
+          post.platform = targetPlatform as any;
+          post.scheduledFor = scheduledFor ? new Date(scheduledFor) : post.scheduledFor;
+          post.mediaUrl = mediaUrl;
+          post.mediaType = mediaType;
+
+          await post.save();
+
+          res.status(200).json({
+               success: true,
+               post
+          });
+
+     } catch (error: any) {
+          res.status(500).json({
+               success: false,
+               message: error.message || "Failed to update post"
+          });
+     }
+};
 
